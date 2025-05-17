@@ -1,6 +1,55 @@
-.main{
-  h3{
-    color: red;
+.main {
+  h3 {
+    color: #333;
+    margin-bottom: 2rem;
   }
 
+  .show-screen {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+
+    input {
+      text-align: right;
+      font-size: 1.5rem;
+      background: transparent;
+      
+      &:first-child {
+        color: #666;
+        font-size: 1rem;
+      }
+      
+      &:last-child {
+        font-weight: bold;
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .button {
+    button {
+      height: 60px;
+      font-size: 1.5rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: none;
+      
+      &:hover {
+        opacity: 0.9;
+        transform: scale(0.98);
+      }
+      
+      &.btn-primary {
+        background-color: #007bff;
+      }
+    }
+  }
+
+  .history {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    min-height: 400px;
+  }
 }
