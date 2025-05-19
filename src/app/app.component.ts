@@ -17,10 +17,13 @@ export class AppComponent {
   currentNumber = '0';        // Số đang hiển thị / người dùng đang nhập
   previousNumber = '';        // Số trước đó (trong phép tính)
   operation = '';             // Phép toán đang thực hiện (+, -, *, /)
-  history: string[] = [];     // Mảng lưu lịch sử các phép tính
+  history: string[] = [];             // Mảng lưu lịch sử các phép tính
   lastResult = '';            // Kết quả tính toán cuối cùng
   secondNumber = '';          // Số thứ 2 trong lần bấm dấu "=" tiếp theo
   lastOperation = '';         // Phép toán trước đó, phục vụ tính toán tiếp theo
+  predictedResult = '';       // Thêm biến mới để lưu kết quả dự đoán
+  showEquals = false;  // Thêm biến để kiểm soát hiển thị dấu bằng
+  displayExpression = ''; // Biến lưu trữ phép tính đầy đủ sau khi bấm =
 
   // Xử lý khi người dùng nhấn số
   onNumberClick(number: string) {
@@ -29,20 +32,24 @@ export class AppComponent {
     } else {
       this.currentNumber += number;       // Nếu khác 0 thì nối thêm số
     }
+    this.updatePrediction();
   }
 
   // Xử lý khi người dùng chọn phép tính (+, -, *, /)
   onOperationClick(op: string) {
-    if (this.currentNumber === '0') return;          // Nếu chưa nhập số thì bỏ qua
+    if (this.currentNumber === '0') return;
 
     if (this.previousNumber !== '') {
-      this.calculate();                              // Nếu đã có phép tính trước đó thì tính trước
+      this.calculate();
     }
 
-    this.operation = op;                             // Lưu phép toán hiện tại
-    this.lastOperation = op;                         // Lưu lại để dùng khi bấm "=" nhiều lần
-    this.previousNumber = this.currentNumber;        // Chuyển số hiện tại sang làm số trước
-    this.currentNumber = '0';                        // Reset số hiện tại để nhập số mới
+    this.operation = op;
+    this.lastOperation = op;
+    this.previousNumber = this.currentNumber;
+    this.currentNumber = '0';
+    this.predictedResult = '';
+    this.showEquals = false;  // Ẩn dấu bằng khi chọn phép tính mới
+    this.displayExpression = ''; // Xóa phép tính hiển thị
   }
 
   // Hàm thực hiện phép tính
@@ -69,44 +76,56 @@ export class AppComponent {
         result = prev / current;
         break;
     }
-
     const calculation = `${this.previousNumber} ${this.operation} ${this.currentNumber} = ${result}`;
     this.history.unshift(calculation);               // Thêm phép tính vào đầu mảng lịch sử
+
+    // Lưu trữ phép tính đầy đủ trước khi reset
+    this.displayExpression = `${this.previousNumber} ${this.operation} ${this.currentNumber} =`;
+
     this.currentNumber = result.toString();          // Hiển thị kết quả
     this.lastResult = result.toString();             // Lưu kết quả cuối cùng
-    console.log( this.currentNumber)
-    console.log(this.lastResult);
+    this.showEquals = true;  // Hiển thị dấu bằng
     this.previousNumber = '';                        // Reset để chuẩn bị cho phép tính mới
     this.operation = '';
+    this.predictedResult = ''; // Ẩn kết quả dự đoán
   }
 
   // Xử lý khi nhấn dấu "="
   onEqualsClick() {
     if (this.operation === '') {
-      // Nếu không có phép toán hiện tại, sử dụng lại phép toán cũ
+      // Nếu không có phép toán hiện tại, sử dụng lại phép toán cũ (cho trường hợp bấm = nhiều lần)
       if (this.lastResult !== '') {
         if (this.secondNumber !== '') {
+           // Lưu lại phép tính đầy đủ cho trường hợp bấm = nhiều lần
+           this.displayExpression = `${this.lastResult} ${this.lastOperation} ${this.secondNumber} =`;
+
           this.previousNumber = this.lastResult;
           this.currentNumber = this.secondNumber;
           this.operation = this.lastOperation;
-          this.calculate();
+          this.calculate(); // calculate() sẽ set showEquals = true
+
+           // Sau khi calculate, previousNumber và operation bị reset, nên cần lưu lại secondNumber
+           // Nhưng ở đây chỉ cần hiển thị, calculate() đã lưu vào history
+           // Cần cập nhật lại logic calculate hoặc onEqualsClick cho trường hợp bấm = liên tiếp
+           // Hiện tại calculate() đã thêm vào history, nên logic hiển thị cần dựa vào state
+
+        } else {
+           // Trường hợp chỉ có lastResult, bấm = không làm gì
+           return;
         }
+      } else {
+         // Trường hợp không có gì cả, bấm = không làm gì
+         return;
       }
     } else {
       this.secondNumber = this.currentNumber;        // Lưu lại số hiện tại để tái sử dụng
-      this.calculate();                              // Tính toán
+      this.calculate();                              // Tính toán, calculate() sẽ set showEquals = true và displayExpression
     }
+    // Không reset previousNumber, operation, currentNumber ở đây nữa, để calculate() làm
+    // this.predictedResult = ''; // calculate() đã làm
+    // this.showEquals = true; // calculate() đã làm
   }
 
-  // Xóa toàn bộ input và phép toán
-  clear() {
-    this.currentNumber = '0';
-    this.previousNumber = '';
-    this.operation = '';
-    this.lastResult = '';
-    this.secondNumber = '';
-    this.lastOperation = '';
-  }
 
   // Thêm dấu "." nếu chưa có trong số hiện tại
   onDecimalClick() {
@@ -117,6 +136,54 @@ export class AppComponent {
 
   // Xóa lịch sử phép tính
   clearHistory() {
-    this.history = [];
+    let IsConfirm = confirm("bạn chắc chắn xóa lịch sử")
+    if (IsConfirm) {
+      this.history = []
+    }
   }
+
+  // Thêm hàm mới để tính toán dự đoán
+  private updatePrediction() {
+    this.showEquals = false; // Ẩn dấu bằng khi nhập số để tính dự đoán
+    this.displayExpression = ''; // Xóa phép tính hiển thị
+
+    if (this.previousNumber && this.operation && this.currentNumber !== '0') {
+      const prev = parseFloat(this.previousNumber);
+      const current = parseFloat(this.currentNumber);
+      let result = 0;
+
+      switch (this.operation) {
+        case '+':
+          result = prev + current;
+          break;
+        case '-':
+          result = prev - current;
+          break;
+        case '*':
+          result = prev * current;
+          break;
+        case '/':
+          if (current !== 0) {
+            result = prev / current;
+          }
+          break;
+      }
+      this.predictedResult = result.toString();
+    } else {
+      this.predictedResult = '';
+    }
+  }
+  // Xóa toàn bộ input và phép toán
+  clear() {
+    this.currentNumber = '0';
+    this.previousNumber = '';
+    this.operation = '';
+    this.lastResult = '';
+    this.secondNumber = '';
+    this.lastOperation = '';
+    this.predictedResult = '';
+    this.showEquals = false;  // Ẩn dấu bằng
+    this.displayExpression = ''; // Xóa phép tính hiển thị
+  }
+
 }
