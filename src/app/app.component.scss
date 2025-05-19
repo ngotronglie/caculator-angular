@@ -10,6 +10,49 @@
     border-radius: 8px;
     margin-bottom: 1rem;
 
+    .calculation-display {
+      text-align: right;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      min-height: 1.8rem;
+      color: #666;
+      
+      .previous-number {
+        color: #666;
+      }
+      
+      .operation {
+        margin: 0 0.5rem;
+        color: #007bff;
+      }
+      
+      .current-number {
+        font-weight: bold;
+      }
+
+      .equals {
+        margin: 0 0.5rem;
+        color: #007bff;
+      }
+    }
+
+    .result-display {
+      text-align: right;
+      font-size: 1.2rem;
+      color: #999;
+      font-style: italic;
+      opacity: 0.7;
+      min-height: 1.5rem;
+
+      &.final-result {
+        font-size: 2rem;
+        color: #333;
+        font-weight: bold;
+        font-style: normal;
+        opacity: 1;
+      }
+    }
+
     input {
       text-align: right;
       font-size: 1.5rem;
@@ -23,6 +66,13 @@
       &:last-child {
         font-weight: bold;
         font-size: 2rem;
+      }
+
+      &.predicted-result {
+        color: #999;
+        font-size: 1.2rem;
+        font-style: italic;
+        opacity: 0.7;
       }
     }
   }

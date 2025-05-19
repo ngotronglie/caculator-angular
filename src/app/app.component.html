@@ -9,9 +9,12 @@
 
     <div class=" col-md-9 button-number-class ">
       <div class="show-screen mb-3">
-        <input type="text" [value]="previousNumber + ' ' + operation" readonly class="mb-1 form-control border-0 shadow-none">
-        <input [value]="currentNumber" readonly class="border-none form-control border-0 shadow-none" type="text">
-
+        <div class="calculation-display">
+          {{ showEquals ? displayExpression : (previousNumber + ' ' + operation + ' ' + currentNumber) }}
+        </div>
+        <div [class.final-result]="showEquals" class="result-display">
+          {{ showEquals ? currentNumber : predictedResult }}
+        </div>
       </div>
       <div class="button d-flex gap-2  flex-wrap">
         <button class="btn btn-primary text-white" style="flex: 0 0 calc(25% - 0.5rem);" (click)="onNumberClick('7')">7</button>
@@ -41,13 +44,6 @@
       <button (click)="clearHistory()" class="btn btn-danger">xóa</button>
     </div>
   </section>
-
-
-
-
-
-
-
 
 
 </div>
