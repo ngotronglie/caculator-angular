@@ -17,6 +17,7 @@
         </div>
       </div>
       <div class="button d-flex gap-2  flex-wrap">
+        <button class="btn btn-primary text-white" style="flex: 0 0 calc(25% - 0.5rem);" (click)="onOperationClick('+')">+</button>
         <button class="btn btn-primary text-white" style="flex: 0 0 calc(25% - 0.5rem);" (click)="onNumberClick('7')">7</button>
         <button class="btn btn-primary text-white" style="flex: 0 0 calc(25% - 0.5rem);" (click)="onNumberClick('8')">8</button>
         <button class="btn btn-primary text-white" style="flex: 0 0 calc(25% - 0.5rem);" (click)="onNumberClick('9')">9</button>
@@ -37,11 +38,14 @@
     </div>
 
     <div class="history col-md-3">
-      <h4>History</h4>
+      <div class="d-flex justify-content-between align-items-center">
+        <h4>History</h4>
+        <button (click)="clearHistory()" class="btn btn-danger">xóa</button>
+      </div>
       <div *ngFor="let calc of history" class="mb-2">
         {{ calc }}
       </div>
-      <button (click)="clearHistory()" class="btn btn-danger">xóa</button>
+
     </div>
   </section>
 
